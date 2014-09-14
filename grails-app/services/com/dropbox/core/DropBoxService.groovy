@@ -50,8 +50,12 @@ class DropBoxService {
         stringBuilder.append("?access_token=")
         stringBuilder.append(URLEncoder.encode(accessToken, "UTF-8"))
         URL url = new URL(stringBuilder.toString())
-        String response = url.text
-        return response
+        try{
+            String response = url.text
+            return response
+        }catch (FileNotFoundException ex){
+            return null
+        }
     }
 
 
