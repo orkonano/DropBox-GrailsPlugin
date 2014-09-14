@@ -12,6 +12,8 @@ import java.nio.file.Paths
  */
 class DropBoxService {
 
+    static transactional = false
+
     def accountInfo(String accessToken) {
         StringBuilder stringBuilder = new StringBuilder("https://api.dropbox.com/1/account/info")
         stringBuilder.append("?access_token=")
@@ -50,12 +52,8 @@ class DropBoxService {
         stringBuilder.append("?access_token=")
         stringBuilder.append(URLEncoder.encode(accessToken, "UTF-8"))
         URL url = new URL(stringBuilder.toString())
-        try{
-            String response = url.text
-            return response
-        }catch (FileNotFoundException ex){
-            return null
-        }
+        String response = url.text
+        return response
     }
 
 
