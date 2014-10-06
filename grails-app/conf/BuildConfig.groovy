@@ -12,6 +12,7 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
+        compile 'commons-io:commons-io:2.4'
     }
 
     plugins {
