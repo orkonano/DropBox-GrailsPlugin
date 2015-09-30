@@ -1,6 +1,7 @@
 package com.dropbox.core
 
 import grails.converters.JSON
+import groovy.json.JsonSlurper
 import org.codehaus.groovy.grails.web.json.JSONElement
 
 import java.nio.file.Files
@@ -40,7 +41,7 @@ class DropBoxService {
             outputStream.flush()
             InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream())
             String response = inputStreamReader.text
-            return response
+            new JsonSlurper().parseText(response)
         }
         finally {
             connection.disconnect()
@@ -53,134 +54,50 @@ class DropBoxService {
         stringBuilder.append(URLEncoder.encode(accessToken, "UTF-8"))
         URL url = new URL(stringBuilder.toString())
         String response = url.text
-        return response
+        new JsonSlurper().parseText(response)
     }
 
 
-    def createNewFolder(String root,String path,String accessToken){
-        StringBuilder tokenUri=new StringBuilder("root=")
-        tokenUri.append(URLEncoder.encode(root,"UTF-8"))
-        tokenUri.append("&path=")
-        tokenUri.append(URLEncoder.encode(path,"UTF-8"))
-        URL url=new URL("https://api.dropbox.com/1/fileops/create_folder?access_token=${accessToken}")
-        HttpURLConnection connection
-        try {
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            connection.setRequestProperty("Content-Length", "" + tokenUri.toString().length());
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
-            outputStreamWriter.write(tokenUri.toString());
-            outputStreamWriter.flush();
-            InputStreamReader inputStreamReader=new InputStreamReader(connection.getInputStream())
-            String response=inputStreamReader.text
-            return response
-
-        } finally {
-            connection?.disconnect()
-        }
+    def createNewFolder(String root, String path, String accessToken){
+        connectClient("fileops/create_folder", accessToken, "POST", root, [path: path])
     }
 
-    def copyOps(String root,String fromPath,String toPath,String accessToken) {
-        StringBuilder tokenUri=new StringBuilder("root=")
-        tokenUri.append(URLEncoder.encode(root,"UTF-8"))
-        tokenUri.append("&from_path=")
-        tokenUri.append(URLEncoder.encode(fromPath,"UTF-8"))
-        tokenUri.append("&to_path=")
-        tokenUri.append(URLEncoder.encode(toPath,"UTF-8"))
-        URL url = new URL("https://api.dropbox.com/1/fileops/copy?access_token=${accessToken}")
-        HttpURLConnection connection
-        try {
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            connection.setRequestProperty("Content-Length", "" + tokenUri.toString().length());
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
-            outputStreamWriter.write(tokenUri.toString());
-            outputStreamWriter.flush();
-            InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream())
-            String response=inputStreamReader.text
-            return response
-
-        } finally {
-            connection?.disconnect()
-        }
+    def copyOps(String root, String fromPath, String toPath, String accessToken) {
+        connectClient("fileops/copy", accessToken, "POST", root, [fromPath: fromPath, toPath: toPath])
     }
 
-    def deleteFileOps(String root,String path,String accessToken){
-        StringBuilder tokenUri=new StringBuilder("root=")
-        tokenUri.append(URLEncoder.encode(root,"UTF-8"))
-        tokenUri.append("&path=")
-        tokenUri.append(URLEncoder.encode(path,"UTF-8"))
-        URL url=new URL("https://api.dropbox.com/1/fileops/delete?access_token=${accessToken}")
-        HttpURLConnection connection
-        try {
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            connection.setRequestProperty("Content-Length", "" + tokenUri.toString().length());
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream())
-            outputStreamWriter.write(tokenUri.toString())
-            outputStreamWriter.flush()
-            InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream())
-            String response = inputStreamReader.text
-            return response
-
-        } finally {
-            connection?.disconnect()
-        }
+    def deleteFileOps(String root, String path, String accessToken){
+        connectClient("fileops/delete", accessToken, root, [path: path])
     }
 
-    def moveOps(String root,String fromPath,String toPath,String accessToken) {
-        StringBuilder tokenUri=new StringBuilder("root=")
-        tokenUri.append(URLEncoder.encode(root,"UTF-8"))
-        tokenUri.append("&from_path=")
-        tokenUri.append(URLEncoder.encode(fromPath,"UTF-8"))
-        tokenUri.append("&to_path=")
-        tokenUri.append(URLEncoder.encode(toPath,"UTF-8"))
-        URL url=new URL("https://api.dropbox.com/1/fileops/move?access_token=${accessToken}")
-        HttpURLConnection connection
-        try {
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            connection.setRequestProperty("Content-Length", "" + tokenUri.toString().length());
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
-            outputStreamWriter.write(tokenUri.toString());
-            outputStreamWriter.flush();
-            InputStreamReader inputStreamReader=new InputStreamReader(connection.getInputStream())
-            String response = inputStreamReader.text
-            return response
-
-        } finally {
-            connection?.disconnect()
-        }
+    def moveOps(String root, String fromPath, String toPath, String accessToken) {
+        connectClient("fileops/move", accessToken, "POST", root, [fromPath: fromPath, toPath: toPath])
     }
 
     def permanentlyDeleteOps(String root, String path, String accessToken) {
+        connectClient("fileops/permanently_delete", accessToken, "POST", root, [path: path])
+    }
+
+    def private connectClient(String action, String accessToken, String httpMethod, String root, Map<String, String> params){
         StringBuilder tokenUri=new StringBuilder("root=")
         tokenUri.append(URLEncoder.encode(root, "UTF-8"))
-        tokenUri.append("&path=")
-        tokenUri.append(URLEncoder.encode(path, "UTF-8"))
-        URL url=new URL("https://api.dropbox.com/1/fileops/permanently_delete?access_token=${accessToken}")
+        params.each{ Map.Entry<String, String> entry ->
+            tokenUri.append("&$entry.key=").append(URLEncoder.encode(entry.value, "UTF-8"))
+        }
+        URL url = new URL("https://api.dropbox.com/1/${action}?access_token=${accessToken}")
         HttpURLConnection connection
         try {
             connection = (HttpURLConnection) url.openConnection()
             connection.setDoOutput(true)
-            connection.setRequestMethod("POST")
+            connection.setRequestMethod(httpMethod)
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
             connection.setRequestProperty("Content-Length", "" + tokenUri.toString().length())
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream())
             outputStreamWriter.write(tokenUri.toString())
             outputStreamWriter.flush()
-            InputStreamReader inputStreamReader=new InputStreamReader(connection.getInputStream())
+            InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream())
             String response = inputStreamReader.text
-            return response
-
+            new JsonSlurper().parseText(response)
         } finally {
             connection?.disconnect()
         }
