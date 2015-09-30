@@ -89,7 +89,7 @@ class DropBoxService {
         tokenUri.append(URLEncoder.encode(fromPath,"UTF-8"))
         tokenUri.append("&to_path=")
         tokenUri.append(URLEncoder.encode(toPath,"UTF-8"))
-        URL url=new URL("https://api.dropbox.com/1/fileops/copy?access_token=${accessToken}")
+        URL url = new URL("https://api.dropbox.com/1/fileops/copy?access_token=${accessToken}")
         HttpURLConnection connection
         try {
             connection = (HttpURLConnection) url.openConnection();
@@ -100,7 +100,7 @@ class DropBoxService {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
             outputStreamWriter.write(tokenUri.toString());
             outputStreamWriter.flush();
-            InputStreamReader inputStreamReader=new InputStreamReader(connection.getInputStream())
+            InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream())
             String response=inputStreamReader.text
             return response
 
@@ -122,11 +122,11 @@ class DropBoxService {
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setRequestProperty("Content-Length", "" + tokenUri.toString().length());
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
-            outputStreamWriter.write(tokenUri.toString());
-            outputStreamWriter.flush();
-            InputStreamReader inputStreamReader=new InputStreamReader(connection.getInputStream())
-            String response=inputStreamReader.text
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream())
+            outputStreamWriter.write(tokenUri.toString())
+            outputStreamWriter.flush()
+            InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream())
+            String response = inputStreamReader.text
             return response
 
         } finally {
@@ -153,7 +153,7 @@ class DropBoxService {
             outputStreamWriter.write(tokenUri.toString());
             outputStreamWriter.flush();
             InputStreamReader inputStreamReader=new InputStreamReader(connection.getInputStream())
-            String response=inputStreamReader.text
+            String response = inputStreamReader.text
             return response
 
         } finally {
@@ -161,5 +161,29 @@ class DropBoxService {
         }
     }
 
+    def permanentlyDeleteOps(String root, String path, String accessToken) {
+        StringBuilder tokenUri=new StringBuilder("root=")
+        tokenUri.append(URLEncoder.encode(root, "UTF-8"))
+        tokenUri.append("&path=")
+        tokenUri.append(URLEncoder.encode(path, "UTF-8"))
+        URL url=new URL("https://api.dropbox.com/1/fileops/permanently_delete?access_token=${accessToken}")
+        HttpURLConnection connection
+        try {
+            connection = (HttpURLConnection) url.openConnection()
+            connection.setDoOutput(true)
+            connection.setRequestMethod("POST")
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+            connection.setRequestProperty("Content-Length", "" + tokenUri.toString().length())
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream())
+            outputStreamWriter.write(tokenUri.toString())
+            outputStreamWriter.flush()
+            InputStreamReader inputStreamReader=new InputStreamReader(connection.getInputStream())
+            String response = inputStreamReader.text
+            return response
+
+        } finally {
+            connection?.disconnect()
+        }
+    }
 
 }
