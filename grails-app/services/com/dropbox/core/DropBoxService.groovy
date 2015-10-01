@@ -103,4 +103,10 @@ class DropBoxService {
         }
     }
 
+    InputStream getFile(String root, String accessToken, String path){
+        StringBuilder stringBuilder = new StringBuilder("https://api-content.dropbox.com/1/files/${root}/${path}")
+        stringBuilder.append("?access_token=")
+        stringBuilder.append(URLEncoder.encode(accessToken, "UTF-8"))
+        new URL(stringBuilder.toString()).newInputStream()
+    }
 }
