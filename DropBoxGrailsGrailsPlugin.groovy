@@ -1,5 +1,5 @@
 class DropBoxGrailsGrailsPlugin {
-    def version = '1.3-SNAPSHOT'
+    def version = '1.3.1'
     def grailsVersion = '2.0 > *'
     def title = 'Drop Box Plugin for Grails'
     def description = 'Adds integration with the DropBox API. Here with this plugin you can use all DropBox services within from your Grails application'
