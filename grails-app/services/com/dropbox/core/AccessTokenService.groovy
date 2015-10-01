@@ -19,8 +19,6 @@ class AccessTokenService {
         requestUri.append(URLEncoder.encode(appKey, "UTF-8"))
         requestUri.append("&response_type=")
         requestUri.append(URLEncoder.encode("code", "UTF-8"))
-//        requestUri.append("&redirect_uri=")
-//        requestUri.append(URLEncoder.encode("http://127.0.0.1:8080/DropBox/dropBox/getAccessToken","UTF-8"))
         return requestUri
     }
 
@@ -33,8 +31,6 @@ class AccessTokenService {
         tokenUri.append(URLEncoder.encode(appKey, "UTF-8"))
         tokenUri.append("&client_secret=")
         tokenUri.append(URLEncoder.encode(appSecret, "UTF-8"))
-//        tokenUri.append("&redirect_uri=")
-//        tokenUri.append(URLEncoder.encode("http://127.0.0.1:8080/DropBox/dropBox/getAccessToken","UTF-8"))
         URL url = new URL("https://api.dropbox.com/1/oauth2/token")
         HttpURLConnection connection
         try {
@@ -49,9 +45,6 @@ class AccessTokenService {
             InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream())
             String response = inputStreamReader.text
             JSONElement content = JSON.parse(response)
-//            println("******************access_Token="+content.access_token)
-//            println("******************token_type="+content.token_type)
-//            println("******************uid="+content.uid)
             return content.access_token
 
         } finally {
