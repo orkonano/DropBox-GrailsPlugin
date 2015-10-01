@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/orkonano/DropBox-GrailsPlugin.png?label=ready&title=Ready)](https://waffle.io/orkonano/DropBox-GrailsPlugin)
 DropBox Plugin for Grails
 ====================
 
