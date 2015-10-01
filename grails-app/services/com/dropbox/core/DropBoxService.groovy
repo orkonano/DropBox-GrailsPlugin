@@ -67,7 +67,7 @@ class DropBoxService {
     }
 
     def deleteFileOps(String root, String path, String accessToken){
-        connectClient("fileops/delete", accessToken, root, [path: path])
+        connectClient("fileops/delete", accessToken, "POST",root, [path: path])
     }
 
     def moveOps(String root, String fromPath, String toPath, String accessToken) {
