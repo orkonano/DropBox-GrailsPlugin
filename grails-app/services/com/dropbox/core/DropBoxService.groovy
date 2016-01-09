@@ -2,11 +2,7 @@ package com.dropbox.core
 
 import grails.converters.JSON
 import groovy.json.JsonSlurper
-import org.codehaus.groovy.grails.web.json.JSONElement
-
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
+import org.grails.web.json.JSONElement
 
 /**
  * Created by hitenpratap on 2/2/14.
